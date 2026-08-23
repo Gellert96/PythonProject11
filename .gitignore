@@ -1,0 +1,20 @@
+# PyCharm
+.idea/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# SQLite
+*.sqlite
+*.sqlite3
+*.sqlite*
+
+# Environment variables
+.env
