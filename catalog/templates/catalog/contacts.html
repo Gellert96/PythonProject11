@@ -16,11 +16,27 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">Магазин</a>
+            <a
+                class="navbar-brand"
+                href="{% url 'home' %}"
+            >
+                Магазин
+            </a>
 
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/">Главная</a>
-                <a class="nav-link active" href="/contacts/">Контакты</a>
+                <a
+                    class="nav-link"
+                    href="{% url 'home' %}"
+                >
+                    Главная
+                </a>
+
+                <a
+                    class="nav-link active"
+                    href="{% url 'contacts' %}"
+                >
+                    Контакты
+                </a>
             </div>
         </div>
     </nav>
@@ -34,7 +50,10 @@
         </h1>
 
         {% if success %}
-            <div class="alert alert-success" role="alert">
+            <div
+                class="alert alert-success"
+                role="alert"
+            >
                 Сообщение успешно отправлено!
             </div>
         {% endif %}
@@ -53,7 +72,10 @@
                             {% csrf_token %}
 
                             <div class="mb-3">
-                                <label for="name" class="form-label">
+                                <label
+                                    for="name"
+                                    class="form-label"
+                                >
                                     Имя
                                 </label>
 
@@ -67,7 +89,10 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="email" class="form-label">
+                                <label
+                                    for="email"
+                                    class="form-label"
+                                >
                                     Электронная почта
                                 </label>
 
@@ -81,7 +106,10 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="message" class="form-label">
+                                <label
+                                    for="message"
+                                    class="form-label"
+                                >
                                     Сообщение
                                 </label>
 
@@ -100,8 +128,8 @@
                             >
                                 Отправить
                             </button>
-
                         </form>
+
                     </div>
                 </div>
             </div>
