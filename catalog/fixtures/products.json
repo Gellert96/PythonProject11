@@ -1,0 +1,28 @@
+[
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "name": "Смартфон",
+        "description": "Современный смартфон",
+        "image": "",
+        "category": 1,
+        "price": "749.99",
+        "created_at": "2026-08-26T12:48:35.212Z",
+        "updated_at": "2026-08-26T12:50:05.454Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 2,
+    "fields": {
+        "name": "Властелин колец",
+        "description": "Фэнтезийный роман",
+        "image": "",
+        "category": 2,
+        "price": "29.99",
+        "created_at": "2026-08-26T12:48:35.217Z",
+        "updated_at": "2026-08-26T12:48:35.217Z"
+    }
+}
+]
