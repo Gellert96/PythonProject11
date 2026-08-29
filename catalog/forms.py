@@ -49,6 +49,15 @@ class ProductForm(forms.ModelForm):
             ),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["name"].required = True
+        self.fields["description"].required = True
+        self.fields["image"].required = True
+        self.fields["category"].required = True
+        self.fields["price"].required = True
+
     def clean_price(self):
         """Проверяет, что цена больше нуля."""
 
