@@ -1,0 +1,64 @@
+{% extends "catalog/base.html" %}
+
+{% block title %}
+    {{ product.name }} — Магазин
+{% endblock %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <div class="row g-5 align-items-start">
+
+        <div class="col-lg-6">
+
+            {% if product.image %}
+                <img
+                    src="{{ product.image.url }}"
+                    class="img-fluid rounded shadow-sm"
+                    alt="{{ product.name }}"
+                >
+            {% else %}
+                <div
+                    class="bg-light border rounded d-flex align-items-center justify-content-center text-muted"
+                    style="height: 400px;"
+                >
+                    Нет изображения
+                </div>
+            {% endif %}
+
+        </div>
+
+        <div class="col-lg-6">
+
+            <h1 class="mb-3">
+                {{ product.name }}
+            </h1>
+
+            <p class="text-muted">
+                Категория:
+                {{ product.category.name }}
+            </p>
+
+            <p class="lead">
+                {{ product.description }}
+            </p>
+
+            <p class="display-6 fw-semibold">
+                {{ product.price }} ₽
+            </p>
+
+            <a
+                href="{% url 'home' %}"
+                class="btn btn-outline-secondary"
+            >
+                ← Вернуться на главную
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
