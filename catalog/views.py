@@ -1,67 +1,59 @@
-from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import render
+from django.urls import reverse
+from django.views import View
+from django.views.generic import CreateView, DetailView, ListView
 
 from catalog.forms import ProductForm
 from catalog.models import Product
 
 
-def home(request):
-    products = Product.objects.all()
+class ProductListView(ListView):
+    """Отображает список товаров."""
 
-    paginator = Paginator(products, 6)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    model = Product
+    template_name = "catalog/home.html"
+    context_object_name = "products"
+    paginate_by = 6
 
-    context = {
-        "products": page_obj,
-        "page_obj": page_obj,
-    }
-
-    return render(request, "catalog/home.html", context)
+    def get_queryset(self):
+        return Product.objects.all()
 
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+class ProductDetailView(DetailView):
+    """Отображает информацию об одном товаре."""
 
-    context = {
-        "product": product,
-    }
-
-    return render(request, "catalog/product_detail.html", context)
+    model = Product
+    template_name = "catalog/product_detail.html"
+    context_object_name = "product"
 
 
-def product_create(request):
-    if request.method == "POST":
-        form = ProductForm(
-            request.POST,
-            request.FILES,
+class ProductCreateView(CreateView):
+    """Создает новый товар."""
+
+    model = Product
+    form_class = ProductForm
+    template_name = "catalog/product_form.html"
+
+    def get_success_url(self):
+        return reverse(
+            "product_detail",
+            kwargs={"pk": self.object.pk},
         )
 
-        if form.is_valid():
-            product = form.save()
 
-            return redirect(
-                "product_detail",
-                pk=product.pk,
-            )
-    else:
-        form = ProductForm()
+class ContactsView(View):
+    """Отображает и обрабатывает страницу контактов."""
 
-    context = {
-        "form": form,
-    }
+    template_name = "catalog/contacts.html"
 
-    return render(
-        request,
-        "catalog/product_form.html",
-        context,
-    )
+    def get(self, request):
+        return render(
+            request,
+            self.template_name,
+            {"success": False},
+        )
 
-
-def contacts(request):
-    success = False
-
-    if request.method == "POST":
+    def post(self, request):
         name = request.POST.get("name")
         email = request.POST.get("email")
         message = request.POST.get("message")
@@ -71,10 +63,8 @@ def contacts(request):
         print(f"Email: {email}")
         print(f"Сообщение: {message}")
 
-        success = True
-
-    return render(
-        request,
-        "catalog/contacts.html",
-        {"success": success},
-    )
+        return render(
+            request,
+            self.template_name,
+            {"success": True},
+        )
