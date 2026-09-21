@@ -48,12 +48,30 @@
                 {{ product.price }} ₽
             </p>
 
-            <a
-                href="{% url 'home' %}"
-                class="btn btn-outline-secondary"
-            >
-                ← Вернуться на главную
-            </a>
+            <div class="d-flex gap-2 flex-wrap">
+
+                <a
+                    href="{% url 'home' %}"
+                    class="btn btn-outline-secondary"
+                >
+                    ← Вернуться на главную
+                </a>
+
+                <a
+                    href="{% url 'product_update' product.pk %}"
+                    class="btn btn-outline-primary"
+                >
+                    Редактировать
+                </a>
+
+                <a
+                    href="{% url 'product_delete' product.pk %}"
+                    class="btn btn-outline-danger"
+                >
+                    Удалить
+                </a>
+
+            </div>
 
         </div>
 

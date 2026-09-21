@@ -1,7 +1,13 @@
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, DetailView, ListView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 
 from catalog.forms import ProductForm
 from catalog.models import Product
@@ -39,6 +45,28 @@ class ProductCreateView(CreateView):
             "product_detail",
             kwargs={"pk": self.object.pk},
         )
+
+
+class ProductUpdateView(UpdateView):
+    """Редактирует существующий товар."""
+
+    model = Product
+    form_class = ProductForm
+    template_name = "catalog/product_form.html"
+
+    def get_success_url(self):
+        return reverse(
+            "product_detail",
+            kwargs={"pk": self.object.pk},
+        )
+
+
+class ProductDeleteView(DeleteView):
+    """Удаляет товар."""
+
+    model = Product
+    template_name = "catalog/product_confirm_delete.html"
+    success_url = reverse_lazy("home")
 
 
 class ContactsView(View):
