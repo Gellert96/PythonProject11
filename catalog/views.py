@@ -1,5 +1,9 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    UserPassesTestMixin,
+)
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -41,6 +45,12 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     form_class = ProductForm
     template_name = "catalog/product_form.html"
 
+    def form_valid(self, form):
+        """Назначает владельцем текущего пользователя."""
+
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse(
             "product_detail",
@@ -48,13 +58,24 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         )
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
-    """Редактирует существующий товар."""
+class ProductUpdateView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    UpdateView,
+):
+    """Редактирует товар владелец или модератор."""
 
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_form.html"
 
+    def test_func(self):
+        product = self.get_object()
+
+        return product.owner == self.request.user or self.request.user.has_perm(
+            "catalog.can_unpublish_product"
+        )
+
     def get_success_url(self):
         return reverse(
             "product_detail",
@@ -62,12 +83,45 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
-    """Удаляет товар."""
+class ProductDeleteView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    DeleteView,
+):
+    """Удаляет товар владелец или модератор."""
 
     model = Product
     template_name = "catalog/product_confirm_delete.html"
     success_url = reverse_lazy("home")
+
+    def test_func(self):
+        product = self.get_object()
+
+        return product.owner == self.request.user or self.request.user.has_perm(
+            "catalog.delete_product"
+        )
+
+
+class ProductUnpublishView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    View,
+):
+    """Отменяет публикацию товара."""
+
+    permission_required = "catalog.can_unpublish_product"
+    raise_exception = True
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+
+        product.is_published = False
+        product.save(update_fields=["is_published"])
+
+        return redirect(
+            "product_detail",
+            pk=product.pk,
+        )
 
 
 class ContactsView(View):
