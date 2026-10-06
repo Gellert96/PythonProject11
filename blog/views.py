@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -37,9 +38,12 @@ class BlogDetailView(DetailView):
         return blog
 
 
-class BlogCreateView(CreateView):
+class BlogCreateView(PermissionRequiredMixin, CreateView):
     """Создает новую блоговую запись."""
 
+    permission_required = "blog.add_blog"
+    raise_exception = True
+
     model = Blog
     template_name = "blog/blog_form.html"
     fields = (
@@ -56,9 +60,12 @@ class BlogCreateView(CreateView):
         )
 
 
-class BlogUpdateView(UpdateView):
+class BlogUpdateView(PermissionRequiredMixin, UpdateView):
     """Редактирует блоговую запись."""
 
+    permission_required = "blog.change_blog"
+    raise_exception = True
+
     model = Blog
     template_name = "blog/blog_form.html"
     fields = (
@@ -75,8 +82,11 @@ class BlogUpdateView(UpdateView):
         )
 
 
-class BlogDeleteView(DeleteView):
+class BlogDeleteView(PermissionRequiredMixin, DeleteView):
     """Удаляет блоговую запись."""
+
+    permission_required = "blog.delete_blog"
+    raise_exception = True
 
     model = Blog
     template_name = "blog/blog_confirm_delete.html"
