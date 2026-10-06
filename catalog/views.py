@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
@@ -5,7 +6,10 @@ from django.contrib.auth.mixins import (
 )
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -15,7 +19,8 @@ from django.views.generic import (
 )
 
 from catalog.forms import ProductForm
-from catalog.models import Product
+from catalog.models import Category, Product
+from catalog.services import get_products_by_category
 
 
 class ProductListView(ListView):
@@ -30,6 +35,14 @@ class ProductListView(ListView):
         return Product.objects.order_by("pk")
 
 
+@method_decorator(
+    cache_page(settings.CACHE_TTL),
+    name="dispatch",
+)
+@method_decorator(
+    vary_on_cookie,
+    name="dispatch",
+)
 class ProductDetailView(LoginRequiredMixin, DetailView):
     """Отображает информацию об одном товаре."""
 
@@ -114,13 +127,34 @@ class ProductUnpublishView(
 
     def post(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-
         product.is_published = False
         product.save(update_fields=["is_published"])
 
         return redirect(
             "product_detail",
             pk=product.pk,
+        )
+
+
+class CategoryProductListView(View):
+    """Отображает продукты выбранной категории."""
+
+    template_name = "catalog/category_products.html"
+
+    def get(self, request, category_id):
+        category = get_object_or_404(
+            Category,
+            pk=category_id,
+        )
+        products = get_products_by_category(category_id)
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "category": category,
+                "products": products,
+            },
         )
 
 
